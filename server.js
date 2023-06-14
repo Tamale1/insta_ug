@@ -40,14 +40,15 @@ app.use(logger("dev"));
 app.use(methodOverride("_method"));
 
 // Setup Sessions - stored in MongoDB
+
 app.use(
-    session({
-      secret: "keyboard cat",
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({  mongoUrl: process.env.DB_STRING }),
-    })
-  );
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({  mongoUrl: process.env.DB_STRING }),
+  })
+);
 
 // Passport middleware
  app.use(passport.initialize());

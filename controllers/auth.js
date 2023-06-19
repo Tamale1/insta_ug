@@ -11,47 +11,73 @@ exports.getLogin = (req, res) => {
   });
 };
 
+exports.getLogin = (req, res) => {
+  if (req.user) {
+    return res.redirect("/profile");
+  }
+  res.render("login", {
+    title: "Login",
+  });
+};
 
 exports.postLogin = (req, res, next) => {
   const validationErrors = [];
-  if (!validator.isEmail(req.body.email))
-    validationErrors.push({ msg: "Please enter a valid email address." });
-  if (validator.isEmpty(req.body.password))
-    validationErrors.push({ msg: "Password cannot be blank." });
+  if (!validator.isEmail(req.body.email)) {
+    validationErrors.push({
+      msg: "Please enter a valid email address."
+    });
+  }
+  if (validator.isEmpty(req.body.password)) {
+    validationErrors.push({
+      msg: "Password cannot be blank."
+    });
+  }
 
   if (validationErrors.length) {
     req.flash("errors", validationErrors);
     return res.redirect("/login");
   }
+
   req.body.email = validator.normalizeEmail(req.body.email, {
     gmail_remove_dots: false,
   });
-
 
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       return next(err);
     }
+
     if (!user) {
-      req.flash('errors', info);
-      return res.redirect('/login');
+      req.flash("errors", info);
+      return res.redirect("/login");
     }
-    ////////////////////////////////////
+
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      req.flash("success", {
+        msg: "Success! You are logged in."
+      });
+
+      res.redirect(req.session.returnTo || "/profile");
+    });
+  })(req, res, next);
+};
    
-    /////////////////////////////////
     
     // Save the user in the session
-    req.session.user = user;
+   
   
-    // Redirect the user to the home page
-    res.redirect('/');
-  });}
 exports.logout = (req, res) =>{
   req.logout(() => {
     console.log('User has logged out.')
   })
   // Check if the user is logged in.
-  if (req.session.user) {
+
+  
+  if(req.session.user) {
     // Regenerate the session.
     req.session.regenerate(function() {
       res.redirect('/');

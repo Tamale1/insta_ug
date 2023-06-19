@@ -18,7 +18,7 @@ module.exports = {
     } catch (err) {
       console.log(err);
     }
-  },
+  },     
   getPost: async (req, res) => {
     try {
       const post = await Post.findById(req.params.id);

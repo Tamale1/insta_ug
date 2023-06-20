@@ -37,7 +37,7 @@ exports.getLogin = (req, res) => {
   
     // Save the user in the session
    
-  /
+  
 
   // }
   exports.logout = (req, res) =>{

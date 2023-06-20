@@ -1,6 +1,6 @@
-const passport = require("passport");
-const validator = require("validator");
-const User = require("../models/User");
+const passport = require('passport');
+const validator = require('validator');
+const User = require('../models/User');
 
 exports.getLogin = (req, res) => {
   if (req.user) {
@@ -11,82 +11,55 @@ exports.getLogin = (req, res) => {
   });
 };
 
-exports.getLogin = (req, res) => {
-  if (req.user) {
-    return res.redirect("/profile");
-  }
-  res.render("login", {
-    title: "Login",
-  });
-};
 
-exports.postLogin = (req, res, next) => {
-  const validationErrors = [];
-  if (!validator.isEmail(req.body.email)) {
-    validationErrors.push({
-      msg: "Please enter a valid email address."
-    });
-  }
-  if (validator.isEmpty(req.body.password)) {
-    validationErrors.push({
-      msg: "Password cannot be blank."
-    });
-  }
 
-  if (validationErrors.length) {
-    req.flash("errors", validationErrors);
-    return res.redirect("/login");
-  }
-
-  req.body.email = validator.normalizeEmail(req.body.email, {
-    gmail_remove_dots: false,
-  });
-
-  passport.authenticate("local", (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-
-    if (!user) {
-      req.flash("errors", info);
+  exports.postLogin = (req, res, next) => {
+    const validationErrors = [];
+    if (!validator.isEmail(req.body.email))
+      validationErrors.push({ msg: "Please enter a valid email address." });
+    if (validator.isEmpty(req.body.password))
+      validationErrors.push({ msg: "Password cannot be blank." });
+  
+    if (validationErrors.length) {
+      req.flash("errors", validationErrors);
       return res.redirect("/login");
     }
-
-    req.logIn(user, (err) => {
-      if (err) {
-        return next(err);
-      }
-
-      req.flash("success", {
-        msg: "Success! You are logged in."
-      });
-
-      res.redirect(req.session.returnTo || "/profile");
+    req.body.email = validator.normalizeEmail(req.body.email, {
+      gmail_remove_dots: false,
     });
-  })(req, res, next);
-};
-   
-    
+    passport.authenticate('local', {
+      successRedirect: '/profile',
+      failureRedirect: '/login',
+      failureFlash: true,
+    })(req, res, next);
+  
+   }
+  
     // Save the user in the session
    
+  /
+
+  // }
+  exports.logout = (req, res) =>{
+    req.logout(() => {
+      console.log('User has logged out.')
+    })
+    // Check if the user is logged in.
   
-exports.logout = (req, res) =>{
-  req.logout(() => {
-    console.log('User has logged out.')
-  })
-  // Check if the user is logged in.
+    
+    if(req.session.user) {
+      // Regenerate the session.
+      req.session.regenerate(function() {
+        res.redirect('/');
+      });
+    } else {
+      // The user is not logged in, so redirect them to the login page.
+      res.redirect('/login');
+    }
+  }
 
   
-  if(req.session.user) {
-    // Regenerate the session.
-    req.session.regenerate(function() {
-      res.redirect('/');
-    });
-  } else {
-    // The user is not logged in, so redirect them to the login page.
-    res.redirect('/login');
-  }
-}
+
 
 
 
@@ -128,7 +101,7 @@ exports.postSignup = async (req, res, next) => {
       req.flash("errors", {
         msg: "Account with that email address or username already exists."
       });
-      return res.redirect("../signup");
+      return res.redirect("/signup");
     }
 
     const user = new User({
@@ -148,4 +121,4 @@ exports.postSignup = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+}

@@ -11,8 +11,6 @@ exports.getLogin = (req, res) => {
   });
 };
 
-
-
   exports.postLogin = (req, res, next) => {
     const validationErrors = [];
     if (!validator.isEmail(req.body.email))
@@ -48,9 +46,7 @@ exports.getLogin = (req, res) => {
       res.redirect(req.session.returnTo || "/profile");
     });
   })(req, res, next);
-
-  
-   }
+ }
   
 
 
@@ -72,11 +68,6 @@ exports.getLogin = (req, res) => {
       res.redirect('/login');
     }
   }
-
-  
-
-
-
 
 exports.getSignup = (req, res) => {
   if (req.user) {
